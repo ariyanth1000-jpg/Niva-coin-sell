@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premium Tally Overlay</title>
+
+<style>
+body {
+  margin:0;
+  font-family: "Segoe UI", system-ui, Arial, sans-serif;
+  background:#f1f5f9;
+  overflow-x: hidden;
+}
+
+/* Floating Countdown */
+.floating-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: linear-gradient(90deg,#0f172a,#020617);
+  color: #fff;
+  text-align: center;
+  padding: 12px 10px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: .3px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.25);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Tally Form */
+.tally-crop-wrapper {
+  display: none;
+}
+.tally-crop-wrapper iframe {
+  width: 100%;
+  height: 700px;
+  border: 0;
+  clip-path: inset(0 0 20% 0);
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(2,6,23,0.95));
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 999;
+  color: #fff;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.overlay-box {
+  padding: 40px 50px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 25px 80px rgba(0,0,0,.6);
+  max-width: 95%;
+  animation: fadeIn 1.2s ease forwards;
+}
+
+.overlay-box .icon {
+  font-size: 60px;
+  margin-bottom: 25px;
+}
+
+.overlay-box .title {
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+.overlay-box .sub {
+  font-size: 18px;
+  opacity: .9;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+/* Overlay Marquee inside overlay-box (নীল রঙ + background) */
+.overlay-box .marquee {
+  width: 100%;
+  overflow: hidden;
+  border-top: 2px solid rgba(30,144,255,0.6);
+  border-bottom: 2px solid rgba(30,144,255,0.6);
+  padding: 12px 0;
+  background: rgba(30,144,255,0.1); /* নীলের হালকা ব্যাকগ্রাউন্ড */
+  margin-top: 10px;
+}
+
+.overlay-box .marquee span {
+  display:inline-block;
+  white-space: nowrap;
+  padding-left:100%;
+  animation: marquee 25s linear infinite;
+  font-size: 20px;
+  font-weight:700;
+  color:#1E90FF; /* নীল রঙ */
+  text-shadow: 1px 1px 2px #000;
+  line-height:1.5;
+}
+
+/* Bottom marquee - সবসময় visible (background added) */
+.marquee-wrapper {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 10000;
+  overflow: hidden;
+  padding: 12px 0;
+  background: rgba(255,0,0,0.15); /* লালের হালকা ব্যাকগ্রাউন্ড */
+  border-top: 2px solid rgba(255,0,0,0.6);
+  border-bottom: 2px solid rgba(255,0,0,0.6);
+}
+
+.marquee-wrapper .marquee span {
+  display:inline-block;
+  white-space: nowrap;
+  padding-left:100%;
+  animation: marquee 25s linear infinite;
+  font-size:18px;
+  font-weight:700;
+  color:#ff4d4d;
+  text-shadow: 1px 1px 2px #000;
+  line-height:1.5;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+@keyframes fadeIn {
+  0% { opacity:0; transform: translateY(-20px); }
+  100% { opacity:1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media(max-width:768px){
+  .overlay-box {padding:30px 35px;}
+  .overlay-box .icon {font-size:50px;}
+  .overlay-box .title {font-size:28px;}
+  .overlay-box .sub {font-size:16px;}
+  .overlay-box .marquee span {font-size:16px;}
+  .marquee-wrapper .marquee span {font-size:14px;}
+}
+</style>
+</head>
+
+<body>
+
+<!-- Floating Countdown -->
+<div class="floating-bar" id="floatingBar"></div>
+
+<!-- Tally form -->
+<div class="tally-crop-wrapper" id="tallyBox">
+  <iframe src="https://tally.so/r/yPyVe0" loading="lazy"></iframe>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay">
+  <div class="overlay-box">
+    <div class="icon">⏰</div>
+    <div class="title">TIME OVER</div>
+    <div class="sub" id="countdownText">
+      Come back again Later<br>Sell Time BD<br>10 AM to 10 PM
+    </div>
+    <!-- Overlay marquee inside overlay-box, নীল রঙ + background -->
+    <div class="marquee">
+      <span>
+        Rules সবার জন্য সমান। তাই সময়ের কাজ সময় মতো করুন।
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Always Visible Bottom Marquee -->
+<div class="marquee-wrapper">
+  <div class="marquee">
+    <span>
+      নির্ধারিত সময়ের মধ্যে কাজ জমা দিন। ছুটি তে থাকলে সেটা Admin বা Advisor কে জানান। অন্যথায়, প্রতিদিন অনুপস্থিত থাকলে, Rules না মানার জন্য আপনার স্টুডেন্ট আইডি থেকে ৫ টাকা কাটা যাবে।
+    </span>
+  </div>
+</div>
+
+<script>
+(function(){
+  const OPEN_HOUR = 6;
+  const CLOSE_HOUR = 22;
+
+  function getBDTime(){
+    return new Date(new Date().toLocaleString("en-US",{ timeZone:"Asia/Dhaka" }));
+  }
+
+  const floatingBar = document.getElementById("floatingBar");
+  const tallyBox = document.getElementById("tallyBox");
+  const overlay = document.getElementById("overlay");
+  const countdownText = document.getElementById("countdownText");
+
+  function init(){
+    const now = getBDTime();
+    const hour = now.getHours();
+
+    if(hour >= OPEN_HOUR && hour < CLOSE_HOUR){
+      tallyBox.style.display = "block";
+      overlay.style.display = "none";
+
+      const closeTime = new Date(now);
+      closeTime.setHours(CLOSE_HOUR,0,0,0);
+
+      function update(){
+        const current = getBDTime();
+        const diff = closeTime - current;
+
+        if(diff <= 0){
+          tallyBox.style.display = "none";
+          floatingBar.style.display = "none";
+          overlay.style.display = "flex";
+          return;
+        }
+
+        const h = Math.floor(diff / (1000*60*60));
+        const m = Math.floor((diff / (1000*60)) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+
+        const timeStr = `${h}h ${m}m ${s}s left to close`;
+        floatingBar.innerHTML = `⏳ Time remaining: ${timeStr}`;
+        countdownText.innerHTML = `Come back again Later<br>Sell Time BD<br>10 AM to 6 PM<br>${timeStr}`;
+      }
+
+      update();
+      setInterval(update,1000);
+
+    } else {
+      floatingBar.style.display = "none";
+      tallyBox.style.display = "none";
+      overlay.style.display = "flex";
+    }
+  }
+
+  init();
+})();
+</script>
+
+</body>
+</html>
